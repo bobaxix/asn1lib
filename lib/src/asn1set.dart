@@ -11,14 +11,17 @@ class ASN1Set extends ASN1Object {
   ///
   /// Note that bytes could be longer than the actual sequence - in which case we would ignore any remaining bytes
   ///
-  ASN1Set.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1Set.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     if (!isSet(tag)) {
       throw ASN1Exception('The tag $tag does not look like a set type');
     }
     _decodeSet();
   }
 
-  ASN1Set({super.tag = CONSTRUCTED_SET_TYPE});
+  ASN1Set({ASN1Tag? tag}) : super(tag: tag ?? ASN1Tag(CONSTRUCTED_SET_TYPE));
 
   ///
   /// Add an element to the set

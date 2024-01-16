@@ -10,14 +10,19 @@ part of '../asn1lib.dart';
 class ASN1Integer extends ASN1Object {
   late final BigInt valueAsBigInteger;
 
-  ASN1Integer(this.valueAsBigInteger, {super.tag = INTEGER_TYPE});
+  ASN1Integer(this.valueAsBigInteger, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(INTEGER_TYPE));
 
-  ASN1Integer.fromInt(int x, {super.tag = INTEGER_TYPE}) {
+  ASN1Integer.fromInt(int x, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(INTEGER_TYPE)) {
     valueAsBigInteger = BigInt.from(x);
     _encode();
   }
 
-  ASN1Integer.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1Integer.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     valueAsBigInteger = decodeBigInt(valueBytes());
   }
 

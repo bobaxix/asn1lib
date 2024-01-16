@@ -13,12 +13,16 @@ class ASN1IA5String extends ASN1Object {
   /// Create an [ASN1IA5String] initialized with String value.
   /// Optionally override the tag
   ///
-  ASN1IA5String(this.stringValue, {super.tag = IA5_STRING_TYPE});
+  ASN1IA5String(this.stringValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(IA5_STRING_TYPE));
 
   ///
   /// Create an [ASN1IA5String] from an encoded list of bytes
   ///
-  ASN1IA5String.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1IA5String.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     var octets = valueBytes();
     stringValue = ascii.decode(octets);
   }

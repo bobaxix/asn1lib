@@ -15,12 +15,16 @@ class ASN1PrintableString extends ASN1Object {
   ///
   /// Optionally override the tag
   ///
-  ASN1PrintableString(this.stringValue, {super.tag = PRINTABLE_STRING_TYPE});
+  ASN1PrintableString(this.stringValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(PRINTABLE_STRING_TYPE));
 
   ///
   /// Create an [ASN1PrintableString] from an encoded list of bytes.
   ///
-  ASN1PrintableString.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1PrintableString.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     var octets = valueBytes();
     stringValue = ascii.decode(octets);
   }

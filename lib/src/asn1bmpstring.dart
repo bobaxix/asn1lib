@@ -13,12 +13,13 @@ class ASN1BMPString extends ASN1Object {
   /// Create an [ASN1BMPString] initialized with String value.
   /// Optionally override the tag
   ///
-  ASN1BMPString(this.stringValue, {super.tag = BMP_STRING_TYPE});
+  ASN1BMPString(this.stringValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(BMP_STRING_TYPE));
 
   ///
   /// Create an [ASN1BMPString] from an encoded list of bytes
   ///
-  ASN1BMPString.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1BMPString.fromBytes(super.bytes, {super.useX690,}) : super.fromBytes() {
     var octets = valueBytes();
     var mergedOctets = <int>[];
 

@@ -12,12 +12,16 @@ class ASN1UTF8String extends ASN1Object {
   ///
   /// Optionally override the tag
   ///
-  ASN1UTF8String(this.utf8StringValue, {super.tag = UTF8_STRING_TYPE});
+  ASN1UTF8String(this.utf8StringValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(UTF8_STRING_TYPE));
 
   ///
   /// Create an [ASN1UTF8String] from an encoded list of bytes
   ///
-  ASN1UTF8String.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1UTF8String.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     var octets = valueBytes();
     utf8StringValue = utf8.decode(octets);
   }

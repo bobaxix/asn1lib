@@ -14,13 +14,16 @@ class ASN1BitString extends ASN1Object {
   ///
   /// Create an [ASN1BitString] initialized with String value. Optionally override the tag.
   ///
-  ASN1BitString(this.stringValue,
-      {this.unusedbits = 0, super.tag = BIT_STRING_TYPE});
+  ASN1BitString(this.stringValue, {this.unusedbits = 0, ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(BIT_STRING_TYPE));
 
   ///
   /// Create an [ASN1OctetString] from an encoded list of bytes
   ///
-  ASN1BitString.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1BitString.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     unusedbits = valueBytes()[0];
     stringValue = valueBytes().sublist(1);
   }

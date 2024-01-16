@@ -13,7 +13,7 @@ void main() {
   });
   test('with tag', () {
     {
-      var a = ASN1Null(tag: 0x06);
+      var a = ASN1Null(tag: ASN1Tag(0x06));
       expect(a.encodedBytes, [
         0x06,
         0x00,

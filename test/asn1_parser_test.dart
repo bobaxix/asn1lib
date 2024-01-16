@@ -343,14 +343,14 @@ void main() {
   });
 
   test('ASN1Parser Universal / Primitive Tag Test', () {
-    var sequence = ASN1Sequence(tag: 0x30);
+    var sequence = ASN1Sequence(tag: ASN1Tag(0x30));
     sequence.add(ASN1Integer.fromInt(10));
     var parsed = ASN1Parser(sequence.encodedBytes);
     expect(parsed.nextObject(), isA<ASN1Sequence>());
   });
 
   test('ASN1Parser Application Tag Test', () {
-    var sequence = ASN1Sequence(tag: 0x45);
+    var sequence = ASN1Sequence(tag: ASN1Tag(0x45));
     sequence.add(ASN1Integer.fromInt(10));
     var parsed = ASN1Parser(sequence.encodedBytes);
     expect(parsed.nextObject(), isA<ASN1Object>());
@@ -360,7 +360,7 @@ void main() {
   // See https://github.com/wstrange/asn1lib/issues/61
   test('ASN1Parser Sequence Subtype Tag Test', () {
     // encodes as APPLICATION + SEQUENCE type, but does not set the constructed bit
-    var sequence = ASN1Sequence(tag: 0x50);
+    var sequence = ASN1Sequence(tag: ASN1Tag(0x50));
     sequence.add(ASN1Integer.fromInt(10));
     var parsed = ASN1Parser(sequence.encodedBytes);
     // todo: this wont parse as a sequence
@@ -368,29 +368,42 @@ void main() {
     expect(parsed.nextObject(), isA<ASN1Object>());
 
     // Sets APPLICATION + constructed, but the type is 0
-    var sequence2 = ASN1Sequence(tag: 0x60);
+    var sequence2 = ASN1Sequence(tag: ASN1Tag(0x60));
     sequence2.add(ASN1Integer.fromInt(10));
     var parsed2 = ASN1Parser(sequence2.encodedBytes);
     expect(parsed2.nextObject(), isA<ASN1Sequence>());
 
     // Sets APPLICATION + constructed + SEQUENCE
-    var sequence3 = ASN1Sequence(tag: 0x70);
+    var sequence3 = ASN1Sequence(tag: ASN1Tag(0x70));
     sequence3.add(ASN1Integer.fromInt(10));
     var parsed3 = ASN1Parser(sequence3.encodedBytes);
     expect(parsed3.nextObject(), isA<ASN1Sequence>());
   }, skip: false);
 
   test('ASN1Parser Context-Specific Tag Test', () {
-    var sequence = ASN1Sequence(tag: 0x80);
+    var sequence = ASN1Sequence(tag: ASN1Tag(0x80));
     sequence.add(ASN1Integer.fromInt(10));
     var parsed = ASN1Parser(sequence.encodedBytes);
     expect(parsed.nextObject(), isA<ASN1Object>());
   });
 
   test('ASN1Parser Private Tag Test', () {
-    var sequence = ASN1Sequence(tag: 0xC0);
+    var sequence = ASN1Sequence(tag: ASN1Tag(0x0C));
     sequence.add(ASN1Integer.fromInt(10));
     var parsed = ASN1Parser(sequence.encodedBytes);
     expect(parsed.nextObject(), isA<ASN1Object>());
+  });
+
+  test('ASN1Parser invalid tag test', () {
+    final parser = ASN1Parser(
+      Uint8List.fromList([0x02, 0x01, 0x01]),
+    );
+
+    final dummyTag = ASN1Tag(1);
+
+    expect(
+      () => parser.nextObject(tag: dummyTag),
+      throwsA(isA<ASN1Exception>()),
+    );
   });
 }

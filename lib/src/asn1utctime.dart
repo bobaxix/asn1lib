@@ -17,12 +17,16 @@ class ASN1UtcTime extends ASN1Object {
   ///
   /// Optionally override the tag
   ///
-  ASN1UtcTime(this.dateTimeValue, {super.tag = UTC_TIME_TYPE});
+  ASN1UtcTime(this.dateTimeValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(UTC_TIME_TYPE));
 
   ///
   /// Create an [ASN1UtcTime] from an encoded list of bytes
   ///
-  ASN1UtcTime.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1UtcTime.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     // The DateTime.parse() function wants:
     // * Either T or space as separator between date and time.
     // * Full year with 4 digits (the UtcTime in ASN.1 has only two digits for year).

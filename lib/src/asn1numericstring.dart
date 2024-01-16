@@ -15,7 +15,8 @@ class ASN1NumericString extends ASN1Object {
   ///
   /// Optionally override the tag
   ///
-  ASN1NumericString(this.stringValue, {super.tag = NUMERIC_STRING_TYPE}) {
+  ASN1NumericString(this.stringValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(NUMERIC_STRING_TYPE)) {
     if (!RegExp(r'^[\d\s]*$').hasMatch(stringValue)) {
       throw ASN1Exception(
           'ASN1 NumericString should only include digits or spaces');
@@ -25,7 +26,10 @@ class ASN1NumericString extends ASN1Object {
   ///
   /// Create an [ASN1NumericString] from an encoded list of bytes.
   ///
-  ASN1NumericString.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1NumericString.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     var octets = valueBytes();
     stringValue = ascii.decode(octets);
   }

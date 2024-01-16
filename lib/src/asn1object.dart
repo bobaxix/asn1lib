@@ -12,7 +12,7 @@ part of '../asn1lib.dart';
 ///
 class ASN1Object {
   /// The BER tag representing this object
-  final int tag;
+  final ASN1Tag tag;
 
   ///
   /// The ASN1 encoded bytes.
@@ -43,7 +43,7 @@ class ASN1Object {
   bool get isEncoded => _encodedBytes != null;
 
   /// Create an ASN1Object. Optionally set the tag
-  ASN1Object({this.tag = 0});
+  ASN1Object({ASN1Tag? tag}) : tag = tag ?? ASN1Tag(0);
 
   ///
   /// Create an object that encapsulates a set of value bytes that are already encoded.
@@ -68,17 +68,25 @@ class ASN1Object {
   /// byte stream we dont always know how long an object is
   /// until we complete parsing it).
   ///
-  ASN1Object.fromBytes(Uint8List bytes) : tag = bytes[0] {
+  ASN1Object.fromBytes(Uint8List bytes, {bool useX690 = false})
+      : tag = ASN1Tag.decode(bytes) {
     _encodedBytes = bytes;
-    _initFromBytes();
+    _initFromBytes(
+      useX690: useX690,
+    );
   }
 
   ///
   /// Perform initial decoding common to all ASN1 Objects
   /// Determines the length and where the value bytes start
   ////
-  void _initFromBytes() {
-    var l = ASN1Length.decodeLength(_encodedBytes!);
+  void _initFromBytes({
+    bool useX690 = false,
+  }) {
+    var l = ASN1Length.decodeLength(
+      _encodedBytes!,
+      useX690: useX690,
+    );
     _valueByteLength = l.length;
     _valueStartPosition = l.valueStartPosition;
   }
@@ -118,9 +126,10 @@ class ASN1Object {
   Uint8List _encodeHeader() {
     if (_encodedBytes == null) {
       var lenEnc = ASN1Length.encodeLength(_valueByteLength);
-      _encodedBytes = Uint8List(1 + lenEnc.length + _valueByteLength);
-      _encodedBytes![0] = tag;
-      _encodedBytes!.setRange(1, 1 + lenEnc.length, lenEnc, 0);
+      _encodedBytes = Uint8List(tag.length + lenEnc.length + _valueByteLength);
+      _encodedBytes!.setAll(0, tag.bytes);
+      _encodedBytes!
+          .setRange(tag.length, tag.length + lenEnc.length, lenEnc, 0);
       _valueStartPosition = 1 + lenEnc.length;
     }
     return _encodedBytes!;

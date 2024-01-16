@@ -4,11 +4,15 @@ part of '../asn1lib.dart';
 // custom ASN1 object that delegates the interpretation to the
 // consumer.
 class ASN1Application extends ASN1Object {
-  ASN1Application({super.tag = APPLICATION_CLASS});
+  ASN1Application({ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(TagClass.APPLICATION_CLASS.value));
 
-  ASN1Application.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1Application.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     // check that this really is an application type
-    if (!isApplication(tag)) {
+    if (!tag.isApplication) {
       throw ASN1Exception('tag $tag is not an ASN1 Application class');
     }
   }
@@ -18,11 +22,15 @@ class ASN1Application extends ASN1Object {
 // custom ASN1 object that delegates the interpretation to the
 // consumer.
 class ASN1Private extends ASN1Object {
-  ASN1Private({super.tag = PRIVATE_CLASS});
+  ASN1Private({ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(TagClass.PRIVATE_CLASS.value));
 
-  ASN1Private.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1Private.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     // check that this really is an Private type
-    if (!isPrivate(tag)) {
+    if (!tag.isPrivate) {
       throw ASN1Exception('tag $tag is not an ASN1 Private class');
     }
   }
@@ -32,11 +40,15 @@ class ASN1Private extends ASN1Object {
 // custom ASN1 object that delegates the interpretation to the
 // consumer.
 class ASN1ContextSpecific extends ASN1Object {
-  ASN1ContextSpecific({super.tag = PRIVATE_CLASS});
+  ASN1ContextSpecific({ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(TagClass.CONTEXT_SPECIFIC_CLASS.value));
 
-  ASN1ContextSpecific.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1ContextSpecific.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     // check that this really is an Private type
-    if (!isContextSpecific(tag)) {
+    if (!tag.isContextSpecific) {
       throw ASN1Exception('tag $tag is not an ASN1 Context specific class');
     }
   }

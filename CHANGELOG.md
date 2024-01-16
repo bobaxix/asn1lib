@@ -1,4 +1,7 @@
 # Changelog
+### 2.0.0
+- Add support for X.690 extension
+
 
 ### 1.5.0
 

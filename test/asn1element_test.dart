@@ -107,7 +107,10 @@ void main() {
     s.add(s1);
     s.add(s2);
 
-    var seq2 = ASN1Sequence.fromBytes(s.encodedBytes);
+    var seq2 = ASN1Sequence.fromBytes(
+      s.encodedBytes,
+      useX690: false,
+    );
     var t1 = seq2.elements[0] as ASN1OctetString;
     var t2 = seq2.elements[1] as ASN1OctetString;
 
@@ -123,7 +126,10 @@ void main() {
     for (var s in splitted) {
       ints.add(int.parse(s, radix: 16));
     }
-    var s = ASN1Sequence.fromBytes(Uint8List.fromList(ints));
+    var s = ASN1Sequence.fromBytes(
+      Uint8List.fromList(ints),
+      useX690: false,
+    );
     s.encodedBytes.length;
     var length = s.elements.elementAt(0).encodedBytes.length;
     expect(length, 294);
@@ -132,8 +138,8 @@ void main() {
   test('Create sequence test2', () {
     // create a sequence with a non default tag
     // Example - 96 - LDAP BIND request
-    var s = ASN1Sequence(tag: 96);
-    expect(s.tag, equals(96));
+    var s = ASN1Sequence(tag: ASN1Tag(96));
+    expect(s.tag.value, equals(96));
   });
 
   test('Null Test', () {
@@ -144,7 +150,7 @@ void main() {
 
   // test for #26
   test('Null Sequence', () {
-    var seq = ASN1Sequence(tag: 96);
+    var seq = ASN1Sequence(tag: ASN1Tag(96));
     seq.add(ASN1Null());
     expect(seq.encodedBytes, isNotNull);
   });

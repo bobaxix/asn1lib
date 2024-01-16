@@ -10,7 +10,8 @@ class ASN1Boolean extends ASN1Object {
   static final ASN1Boolean ASN1FalseBoolean = ASN1Boolean(false);
 
   // ASN1Boolean(this._boolValue,{tag: BOOLEAN_TYPE}):super(tag:BOOLEAN_TYPE) {
-  ASN1Boolean(this.booleanValue, {super.tag = BOOLEAN_TYPE}) {
+  ASN1Boolean(this.booleanValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(BOOLEAN_TYPE)) {
     _valueByteLength = 1;
   }
 

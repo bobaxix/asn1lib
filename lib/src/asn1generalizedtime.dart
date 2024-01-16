@@ -17,12 +17,16 @@ class ASN1GeneralizedTime extends ASN1Object {
   ///
   /// Optionally override the tag
   ///
-  ASN1GeneralizedTime(this.dateTimeValue, {super.tag = GENERALIZED_TIME});
+  ASN1GeneralizedTime(this.dateTimeValue, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(GENERALIZED_TIME));
 
   ///
   /// Create an [ASN1GeneralizedTime] from an encoded list of bytes
   ///
-  ASN1GeneralizedTime.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1GeneralizedTime.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     var octets = valueBytes();
     var stringValue = ascii.decode(octets);
     var year = stringValue.substring(0, 4);

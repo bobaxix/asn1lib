@@ -7,12 +7,14 @@ class ASN1Parser {
   /// stream of bytes to parse. This might be a view into a longer stream
   final Uint8List _bytes;
   final bool _relaxedParsing;
+  final bool _useX690;
 
   /// Create a new parser for the stream of [_bytes]
   /// if [relaxedParsing] is true, dont throw an exception if we encounter
   /// unknown ASN1 objects. Just encode them as an ASN1Object.
-  ASN1Parser(this._bytes, {bool relaxedParsing = false})
-      : _relaxedParsing = relaxedParsing;
+  ASN1Parser(this._bytes, {bool relaxedParsing = false, bool useX690 = false})
+      : _relaxedParsing = relaxedParsing,
+        _useX690 = useX690;
 
   /// current position in the byte array
   int _position = 0;
@@ -25,12 +27,28 @@ class ASN1Parser {
   ///
   /// Return the next ASN1Object in the stream
   ///
-  ASN1Object nextObject() {
-    var tag = _bytes[_position]; // get current tag in stream
+  ASN1Object nextObject({
+    ASN1Tag? tag,
+  }) {
+    var lTag = ASN1Tag.decode(
+      _bytes,
+      offset: _position,
+    ); // get current tag in stream
+
+    if (lTag.value > 255 && !_useX690) {
+      throw ASN1Exception('useX690 is off');
+    }
+
+    if (tag != null && lTag != tag) {
+      throw ASN1Exception('$lTag is different than expected $tag');
+    }
 
     // decode the length, and use this to create a view into the
     // byte stream that contains the next object
-    var length = ASN1Length.decodeLength(_bytes.sublist(_position));
+    var length = ASN1Length.decodeLength(
+      _bytes.sublist(_position),
+      useX690: _useX690,
+    );
     var len = length.length + length.valueStartPosition;
 
     // create a view into the larger stream that includes the remaining un-parsed bytes
@@ -40,24 +58,36 @@ class ASN1Parser {
 
     final ASN1Object obj;
 
-    switch (tag & 0xc0) {
+    switch (lTag.tagClass) {
       // get highest 2 bits - these are the type
-      case 0:
-        obj = _doPrimitive(tag, subBytes);
+      case TagClass.UNIVERSAL_CLASS:
+        obj = _doPrimitive(lTag.value, subBytes);
         break;
-      case APPLICATION_CLASS:
+      case TagClass.APPLICATION_CLASS:
         // LDAP tags are APPLICATION specific. Need to parse sequences
-        if (isConstructed(tag)) {
-          obj = ASN1Sequence.fromBytes(subBytes);
+        if (lTag.isConstructed) {
+          obj = ASN1Sequence.fromBytes(
+            subBytes,
+            useX690: _useX690,
+          );
           break;
         }
-        obj = ASN1Application.fromBytes(subBytes);
+        obj = ASN1Application.fromBytes(
+          subBytes,
+          useX690: _useX690,
+        );
         break;
-      case PRIVATE_CLASS:
-        obj = ASN1Private.fromBytes(subBytes);
+      case TagClass.PRIVATE_CLASS:
+        obj = ASN1Private.fromBytes(
+          subBytes,
+          useX690: _useX690,
+        );
         break;
-      case CONTEXT_SPECIFIC_CLASS:
-        obj = ASN1Object.fromBytes(subBytes);
+      case TagClass.CONTEXT_SPECIFIC_CLASS:
+        obj = ASN1Object.fromBytes(
+          subBytes,
+          useX690: _useX690,
+        );
         break;
       default:
         throw UnimplementedError();
@@ -71,7 +101,10 @@ class ASN1Parser {
     //print("Primitive tag=${hex(tag)}");
     switch (tag) {
       case CONSTRUCTED_SEQUENCE_TYPE: // sequence
-        return ASN1Sequence.fromBytes(b);
+        return ASN1Sequence.fromBytes(
+          b,
+          useX690: _useX690,
+        );
 
       case OCTET_STRING_TYPE:
         return ASN1OctetString.fromBytes(b);

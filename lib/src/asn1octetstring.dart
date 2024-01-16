@@ -14,7 +14,8 @@ class ASN1OctetString extends ASN1Object {
   /// Create an [ASN1OctetString] initialized with a [String] or a [List<int>].
   /// Optionally override the tag
   ///
-  ASN1OctetString(dynamic octets, {super.tag = OCTET_STRING_TYPE}) {
+  ASN1OctetString(dynamic octets, {ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(OCTET_STRING_TYPE)) {
     if (octets is String) {
       this.octets = Uint8List.fromList(octets.codeUnits);
     } else if (octets is Uint8List) {
@@ -30,7 +31,10 @@ class ASN1OctetString extends ASN1Object {
   ///
   /// Create an [ASN1OctetString] from an encoded list of bytes.
   ///
-  ASN1OctetString.fromBytes(super.bytes) : super.fromBytes() {
+  ASN1OctetString.fromBytes(
+    super.bytes, {
+    super.useX690,
+  }) : super.fromBytes() {
     octets = valueBytes();
   }
 

@@ -63,10 +63,16 @@ class ASN1Length {
   /// The first byte is the tag
   /// THe length starts at the second byte.
   ///
-  static ASN1Length decodeLength(Uint8List encodedBytes) {
-    var valueStartPosition = 2; //default
-    var length = encodedBytes[1] & 0x7F;
-    if (length != encodedBytes[1]) {
+  static ASN1Length decodeLength(Uint8List encodedBytes,
+      {bool useX690 = false}) {
+    var valueStartPosition = (useX690 && encodedBytes[0] & 0x1F == 0x1F)
+        ? Uint8List.sublistView(encodedBytes, 1)
+                .indexWhere((e) => e & 0x80 != 0x80) +
+            3
+        : 2;
+
+    var length = encodedBytes[valueStartPosition - 1] & 0x7F;
+    if (length != encodedBytes[valueStartPosition - 1]) {
       var numLengthBytes = length;
 
       length = 0;

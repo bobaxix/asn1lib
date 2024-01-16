@@ -62,8 +62,8 @@ class ASN1ObjectIdentifier extends ASN1Object {
 
   String? identifier;
 
-  ASN1ObjectIdentifier(this.oi,
-      {this.identifier, super.tag = OBJECT_IDENTIFIER});
+  ASN1ObjectIdentifier(this.oi, {this.identifier, ASN1Tag? tag})
+      : super(tag: tag ?? ASN1Tag(OBJECT_IDENTIFIER));
 
   ///
   /// Instantiate a [ASN1ObjectIdentifier] from the given [bytes].
@@ -150,11 +150,12 @@ class ASN1ObjectIdentifier extends ASN1Object {
   }
 
   static ASN1ObjectIdentifier fromComponentString(String path,
-          {int tag = OBJECT_IDENTIFIER}) =>
-      fromComponents(path.split('.').map(int.parse).toList(), tag: tag);
+          {ASN1Tag? tag}) =>
+      fromComponents(path.split('.').map(int.parse).toList(),
+          tag: tag ?? ASN1Tag(OBJECT_IDENTIFIER));
 
   static ASN1ObjectIdentifier fromComponents(List<int> components,
-      {int tag = OBJECT_IDENTIFIER}) {
+      {ASN1Tag? tag}) {
     assert(components.length >= 2);
     assert(components[0] < 3);
     assert(components[1] < 39);

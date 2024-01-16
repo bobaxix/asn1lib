@@ -32,7 +32,10 @@ void main() {
     var s = seq.elements[2];
     expect(s, isA<ASN1Object>());
     // Allow this to be recast as a sequence type.
-    var t = ASN1Sequence.fromBytes(s.encodedBytes);
+    var t = ASN1Sequence.fromBytes(
+      s.encodedBytes,
+      useX690: false,
+    );
     expect(t, isA<ASN1Sequence>());
   });
 
@@ -43,6 +46,6 @@ void main() {
     expect(seq.elements.length, equals(1));
     var e = seq.elements[0];
     expect(e, isA<ASN1Object>());
-    expect(isContextSpecific(e.tag), isTrue);
+    expect(e.tag.isContextSpecific, isTrue);
   });
 }
